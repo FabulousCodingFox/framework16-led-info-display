@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "ms-vscode.cpptools-extension-pack",
+    "xaver.clang-format",
+    "cs128.cs128-clang-tidy"
+  ]
+}

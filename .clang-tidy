@@ -1,0 +1,3 @@
+Checks: '-*,modernize-*,cppcoreguidelines-*,bugprone-*,clang-analyzer-*,performance-*,portability-*'
+WarningsAsErrors: 'modernize-*,clang-analyzer-*,performance-*,portability-*'
+HeaderFilterRegex: '.*'

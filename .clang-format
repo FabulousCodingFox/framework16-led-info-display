@@ -1,0 +1,21 @@
+BasedOnStyle: LLVM
+IndentWidth: 2
+UseTab: Never
+ColumnLimit: 0
+BreakBeforeBraces: Allman
+BraceWrapping:
+  AfterFunction: true
+  AfterControlStatement: true
+DerivePointerAlignment: false
+PointerAlignment: Left
+NamespaceIndentation: All
+SortIncludes: true
+IncludeBlocks: Preserve
+SpaceBeforeParens: ControlStatements
+SpaceAfterCStyleCast: true
+BreakConstructorInitializers: BeforeComma
+ConstructorInitializerIndentWidth: 2
+AlignAfterOpenBracket: AlwaysBreak 
+AllowShortFunctionsOnASingleLine: InlineOnly
+ReflowComments: true
+
