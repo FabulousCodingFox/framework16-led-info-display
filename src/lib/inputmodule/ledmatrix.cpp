@@ -68,4 +68,27 @@ namespace lib::inputmodule::ledmatrix
 
     inputmodule::send_command(device, inputmodule::CommandVals::Draw, vals);
   };
+
+  void pattern_count(libusb_device_handle* device, int value)
+  {
+    spdlog::trace("Setting pattern to count ", value);
+    if (value > PIXELS || value < 0)
+    {
+      spdlog::error("Value must be between 0 and {}", PIXELS);
+      return;
+    }
+
+    std::vector<uint8_t> vals(39, 0x00);
+
+    for (int byte = 0; byte < value / CHAR_BIT; ++byte)
+    {
+      vals[byte] = 0xFF;
+    }
+    for (int i = 0; i < value % CHAR_BIT; ++i)
+    {
+      vals[value / 8] += 1 << i;
+    }
+
+    inputmodule::send_command(device, inputmodule::CommandVals::Draw, vals);
+  }
 } // namespace lib::inputmodule::ledmatrix
