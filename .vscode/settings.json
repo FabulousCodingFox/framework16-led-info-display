@@ -70,6 +70,18 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "text_encoding": "cpp",
-        "set": "cpp"
+        "set": "cpp",
+        "qapplication": "cpp",
+        "qsystemtrayicon": "cpp",
+        "qmessagebox": "cpp",
+        "qwidget": "cpp",
+        "qstring": "cpp",
+        "list": "cpp",
+        "expected": "cpp",
+        "future": "cpp",
+        "stdfloat": "cpp",
+        "qtimer": "cpp",
+        "qsettings": "cpp",
+        "qmainwindow": "cpp"
     }
 }

@@ -1,17 +1,21 @@
-#include "lib/inputmodule/ledmatrix.hpp"
-#include "lib/usb.hpp"
+#include "./lib/ledmatrix/ledmatrix.hpp"
+#include "./lib/preset.hpp"
+#include "./lib/usb/usb.hpp"
+#include "./lib/window/window.hpp"
+#include "./preset/clock.hpp"
 #include "spdlog/spdlog.h"
 #include <iostream>
 #include <libusb.h>
+#include <random>
 #include <thread>
 
-auto main(int argc, const char* argv[]) -> int
+auto main(int argc, char* argv[]) -> int
 {
   spdlog::set_level(static_cast<spdlog::level::level_enum>(SPDLOG_LEVEL_TRACE));
   spdlog::info("Starting up");
 
   spdlog::info("Initializing usb library");
-  std::vector<libusb_device_handle*>* handles = lib::usb::init();
+  auto handles = lib::usb::init();
 
   if (handles->empty())
   {
@@ -21,16 +25,9 @@ auto main(int argc, const char* argv[]) -> int
 
   spdlog::info("Found {} devices", handles->size());
 
-  for (auto handle : *handles)
-  {
-    std::vector<std::string> parts{"!!", "cloud", "rain", ":)", "batteryLow"};
-    lib::inputmodule::ledmatrix::pattern_symbols(handle, parts);
-    lib::inputmodule::ledmatrix::integrated_animate(handle, false);
+  spdlog::info("Registering presets");
+  auto presets = new lib::preset::PresetManager();
+  presets->addPreset(std::make_shared<preset::clock>());
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  }
-
-  lib::usb::exit();
-
-  return 0;
+  return lib::window::run(argc, argv, handles, presets);
 }

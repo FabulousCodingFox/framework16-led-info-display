@@ -24,13 +24,25 @@
         hidapi
         spdlog
         clang-tools
-        catch2_3
+
+        # Wrapper
         makeWrapper
         bashInteractive
+
+        # QT6
+        qt6.full
+        qt6.qtbase
+        qt6.wrapQtAppsHook
       ];
       nativeBuildInputs = [
         pkgs.pkg-config
       ];
+      shellHook = ''
+        export QT_QPA_PLATFORM=wayland
+        bashdir=$(mktemp -d)
+        makeWrapper "$(type -p bash)" "$bashdir/bash" "''${qtWrapperArgs[@]}"
+        exec "$bashdir/bash"
+      '';
     };
   };
 }

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <libusb.h>
+#include "../ledmatrix/ledmatrix.hpp"
 #include <vector>
 
 namespace lib::usb
 {
-  auto init() -> std::vector<libusb_device_handle*>*;
+  auto init() -> std::vector<ledmatrix::ledmatrix*>*;
   void exit();
 } // namespace lib::usb

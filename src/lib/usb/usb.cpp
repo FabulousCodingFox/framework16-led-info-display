@@ -1,14 +1,12 @@
-#include "usb.hpp"
-#include "./inputmodule/ledmatrix.hpp"
-
+#include "./usb.hpp"
 #include "spdlog/spdlog.h"
 
 namespace lib::usb
 {
-  static const auto HANDLES = new std::vector<libusb_device_handle*>();
+  static const auto HANDLES = new std::vector<ledmatrix::ledmatrix*>();
   static libusb_context* ctx = nullptr;
 
-  auto init() -> std::vector<libusb_device_handle*>*
+  auto init() -> std::vector<ledmatrix::ledmatrix*>*
   {
     // Initialize the libusb context
     spdlog::debug("[USB] Initializing libusb");
@@ -42,7 +40,7 @@ namespace lib::usb
       if (libusb_get_device_descriptor(device, &desc) == 0)
       {
         // Check if it matches VID=0x32AC and PID=0x0020
-        if (desc.idVendor == inputmodule::ledmatrix::VID && desc.idProduct == inputmodule::ledmatrix::PID)
+        if (desc.idVendor == ledmatrix::VID && desc.idProduct == ledmatrix::PID)
         {
           spdlog::debug("[USB] Found Framework LED Matrix device");
 
@@ -88,7 +86,7 @@ namespace lib::usb
             spdlog::debug("[USB] Successfully claimed interface 1");
 
             // Store the handle
-            HANDLES->push_back(handle);
+            HANDLES->push_back(new ledmatrix::ledmatrix(handle));
           }
           else
           {
@@ -114,31 +112,7 @@ namespace lib::usb
     // Close and free resources at the end
     for (auto handle : *HANDLES)
     {
-
-      // Reset the device
-      int r = libusb_reset_device(handle);
-      if (r != LIBUSB_SUCCESS)
-      {
-        spdlog::warn("[USB] Could not reset device: {}", libusb_strerror((libusb_error) r));
-      }
-
-      // Release the interface
-      r = libusb_release_interface(handle, 1);
-      if (r != LIBUSB_SUCCESS)
-      {
-        spdlog::warn("[USB] Could not release interface: {}", libusb_strerror((libusb_error) r));
-      }
-
-#ifdef __linux__
-      // Re-attach kernel driver
-      r = libusb_attach_kernel_driver(handle, 1);
-      if (r != LIBUSB_SUCCESS)
-      {
-        spdlog::warn("[USB] Could not attach kernel driver: {}", libusb_strerror((libusb_error) r));
-      }
-#endif
-
-      libusb_close(handle);
+      delete handle;
     }
 
     spdlog::debug("[USB] Exiting libusb");
