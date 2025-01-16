@@ -18,6 +18,18 @@
       }
     },
     {
+      "name": "Windows Tests",
+      "description": "Windows Test configuration",
+      "hidden": false,
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/build/Debug",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "TESTS": "ON"
+      }
+    },
+    {
       "name": "Windows Release",
       "description": "Windows Release configuration",
       "hidden": false,
@@ -37,6 +49,18 @@
       "cacheVariables": {
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
         "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "Linux Tests",
+      "description": "Linux Test configuration",
+      "hidden": false,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/Debug",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+        "CMAKE_BUILD_TYPE": "Debug",
+        "TESTS": "ON"
       }
     },
     {

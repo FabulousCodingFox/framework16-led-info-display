@@ -24,6 +24,7 @@
         hidapi
         spdlog
         clang-tools
+        catch2_3
         makeWrapper
         bashInteractive
       ];
