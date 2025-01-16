@@ -12,20 +12,32 @@ namespace lib::inputmodule::ledmatrix
   static const unsigned int VID = 0x32AC;
   static const unsigned int PID = 0x0020;
 
-  static const unsigned int WIDTH = 9;
-  static const unsigned int HEIGHT = 34;
-  static const unsigned int PIXELS = WIDTH * HEIGHT;
+  static const int WIDTH = 9;
+  static const int HEIGHT = 34;
+  static const int PIXELS = WIDTH * HEIGHT;
 
   /**
-   * @brief Animate the integrated led matrix (Scroll down)
+   * @brief Tell the firmware to start/stop animation. Scrolls the currently saved grid vertically down.
    * @param device The device handle
    * @param animate Whether to animate or not
    * @return void
    */
-  inline void integrated_animate(libusb_device_handle* device, bool animate)
+  inline void animate(libusb_device_handle* device, bool animate)
   {
     spdlog::trace("Setting integrated animate to {}", animate);
     inputmodule::send_command(device, inputmodule::CommandVals::Animate, {(unsigned char) (animate ? 0x01 : 0x00)});
+  }
+
+  /**
+   * @brief Get the current animation status
+   * @param device The device handle
+   * @return The current animation status
+   */
+  inline auto get_animate(libusb_device_handle* device) -> bool
+  {
+    spdlog::trace("Getting current animation status");
+    auto res = inputmodule::send_command_with_response(device, inputmodule::CommandVals::Animate);
+    return res.size() > 0 && res[0] == 0x01;
   }
 
   /**
@@ -145,4 +157,52 @@ namespace lib::inputmodule::ledmatrix
    * @return void
    */
   void pattern_count(libusb_device_handle* device, int value);
+
+  /**
+   * @brief Gets the current pwm frequency of the led matrix
+   * @param device The device handle
+   * @return The pwm frequency in Hz or -1 if the frequency is unknown
+   */
+  auto get_pwm_freq(libusb_device_handle* device) -> int;
+
+  /**
+   * @brief Show a black/white matrix. Send everything in a single command.
+   * @param device The device handle
+   * @param matrix The matrix to display
+   * @return void
+   */
+  void pattern_matrix(libusb_device_handle* device, std::vector<bool>& matrix);
+
+  /**
+   * @brief Display 9 values in equalizer diagram starting from the middle, going up and down
+   * @param device The device handle
+   * @param values The values to display
+   * @return void
+   */
+  void pattern_equalizer(libusb_device_handle* device, std::vector<unsigned char>& values);
+
+  /**
+   * @brief Sets the global brightness of the led matrix
+   * @param device The device handle
+   * @param value The brightness value (0-255)
+   * @return void
+   */
+  inline void brightness(libusb_device_handle* device, unsigned char value)
+  {
+    spdlog::trace("Setting global brightness to {}", value);
+    inputmodule::send_command(device, inputmodule::CommandVals::Brightness, {value});
+  }
+
+  /**
+   * @brief Gets the current global brightness of the led matrix
+   * @param device The device handle
+   * @return The current global brightness
+   */
+  inline auto get_brightness(libusb_device_handle* device) -> unsigned char
+  {
+    spdlog::trace("Getting current global brightness");
+    auto res = inputmodule::send_command_with_response(device, inputmodule::CommandVals::Brightness);
+    return res.size() > 0 ? res[0] : 0;
+  }
+
 } // namespace lib::inputmodule::ledmatrix

@@ -44,7 +44,7 @@ namespace lib::inputmodule::ledmatrix
       font_items.push_back(std::ref(font::get_char(parts[i])));
     }
 
-    std::vector<uint8_t> vals(39, 0x00);
+    std::vector<unsigned char> vals(39, 0x00);
 
     for (size_t digit_i = 0; digit_i < font_items.size(); ++digit_i)
     {
@@ -78,7 +78,7 @@ namespace lib::inputmodule::ledmatrix
       return;
     }
 
-    std::vector<uint8_t> vals(39, 0x00);
+    std::vector<unsigned char> vals(39, 0x00);
 
     for (int byte = 0; byte < value / CHAR_BIT; ++byte)
     {
@@ -90,5 +90,65 @@ namespace lib::inputmodule::ledmatrix
     }
 
     inputmodule::send_command(device, inputmodule::CommandVals::Draw, vals);
+  }
+
+  auto get_pwm_freq(libusb_device_handle* device) -> int
+  {
+    auto res = inputmodule::send_command_with_response(device, inputmodule::CommandVals::PwmFreq);
+    if (res.size() == 0)
+      return -1;
+    unsigned char freq = res[0];
+    if (freq == 0)
+      return 29000;
+    if (freq == 1)
+      return 3600;
+    if (freq == 2)
+      return 1800;
+    if (freq == 3)
+      return 900;
+    return -1;
+  }
+
+  void pattern_matrix(libusb_device_handle* device, std::vector<bool>& matrix)
+  {
+    spdlog::trace("Setting pattern to matrix with {} values", matrix.size());
+    std::vector<unsigned char> vals(39, 0x00);
+
+    for (int x = 0; x < WIDTH; ++x)
+    {
+      for (int y = 0; y < HEIGHT; ++y)
+      {
+        int i = x + y * WIDTH;
+        if (matrix[i])
+          vals[i / 8] |= (1 << (i % 8));
+      }
+    }
+
+    inputmodule::send_command(device, inputmodule::CommandVals::Draw, vals);
+  }
+
+  void pattern_equalizer(libusb_device_handle* device, std::vector<unsigned char>& values)
+  {
+    spdlog::trace("Setting pattern to equalizer with {} values", values.size());
+    std::vector<bool> matrix(PIXELS, false);
+    for (int col = 0; col < std::min(values.size(), (std::size_t) 9); ++col)
+    {
+      int val = values[col];
+
+      int row = HEIGHT / 2;
+      int above = val / 2;
+      int below = val - above;
+
+      for (int i = 0; i < above; i++)
+      {
+        matrix[col + (row + i) * WIDTH] = true;
+      }
+
+      for (int i = 0; i < below; i++)
+      {
+        matrix[col + (row - 1 - i) * WIDTH] = true;
+      }
+    }
+    pattern_matrix(device, matrix);
   }
 } // namespace lib::inputmodule::ledmatrix

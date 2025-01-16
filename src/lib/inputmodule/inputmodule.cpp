@@ -28,6 +28,11 @@ namespace lib::inputmodule::inputmodule
     {
       spdlog::error("Bulk OUT transfer failed: {}", libusb_strerror(static_cast<libusb_error>(ret)));
     }
+
+    if (actual_length != outData.size())
+    {
+      spdlog::error("Bulk OUT transfer size does not match. Expected {}; Got {}", outData.size(), actual_length);
+    }
   }
 
   auto send_command_with_response(libusb_device_handle* device, unsigned char command, const std::vector<unsigned char>& parameters) -> std::vector<unsigned char>
