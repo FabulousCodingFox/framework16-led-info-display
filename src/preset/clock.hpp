@@ -14,8 +14,8 @@ namespace preset
   public:
     std::string get_name() override { return "Clock"; };
     std::string get_id() override { return "clock"; };
-    void init(lib::ledmatrix::ledmatrix& device) override {};
-    void render(lib::ledmatrix::ledmatrix& device, lib::preset::RenderOptions& options) override
+    void init(lib::ledmatrix::ledmatrix* device) override {};
+    void render(lib::ledmatrix::ledmatrix* device) override
     {
       // Get the current time
       auto now = std::chrono::system_clock::now();
@@ -34,8 +34,9 @@ namespace preset
       time_stream << std::put_time(&local_time, "%H:%M");
       std::string current_time = time_stream.str();
 
-      device.pattern_text(current_time);
+      device->pattern_text(current_time);
     };
-    void exit(lib::ledmatrix::ledmatrix& device) override {};
+    void exit(lib::ledmatrix::ledmatrix* device) override {};
+    std::shared_ptr<lib::preset::IPreset> clone() const override { return std::make_shared<clock>(); };
   };
 } // namespace preset

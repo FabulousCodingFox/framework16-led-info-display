@@ -82,6 +82,10 @@
         "stdfloat": "cpp",
         "qtimer": "cpp",
         "qsettings": "cpp",
-        "qmainwindow": "cpp"
+        "qmainwindow": "cpp",
+        "qcombobox": "cpp",
+        "qcoreapplication": "cpp",
+        "qaction": "cpp",
+        "qpushbutton": "cpp"
     }
 }

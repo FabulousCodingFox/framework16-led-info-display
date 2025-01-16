@@ -1,9 +1,17 @@
 #pragma once
 
+#include "../preset.hpp"
+#include <QSettings>
 #include <cstdint>
 #include <libusb.h>
 #include <spdlog/spdlog.h>
 #include <vector>
+
+namespace lib::preset
+{
+  class IPreset;
+  class PresetManager;
+} // namespace lib::preset
 
 namespace lib::ledmatrix
 {
@@ -60,8 +68,14 @@ namespace lib::ledmatrix
   public:
     libusb_device_handle* device;
 
+    lib::preset::IPreset* preset = nullptr;
+
+    int id;
+
     ledmatrix(libusb_device_handle* device);
     ~ledmatrix();
+
+    void apply_config(QSettings* settings, lib::preset::PresetManager* presets);
 
     void send_command(command command, const std::vector<uint8_t>& parameters = {});
     auto send_command_with_response(command command, const std::vector<uint8_t>& parameters = {}) -> std::vector<uint8_t>;

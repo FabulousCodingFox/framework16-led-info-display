@@ -9,9 +9,11 @@ namespace lib::ledmatrix
   static const uint8_t ENDPOINT_OUT = 0x01;
   static const uint8_t ENDPOINT_IN = 0x82;
   static const int TRANSFER_TIMEOUT_MS = 1000;
+  static int _id_counter = 0;
 
   ledmatrix::ledmatrix(libusb_device_handle* device)
     : device(device)
+    , id(++_id_counter)
   {
   }
 
@@ -42,6 +44,32 @@ namespace lib::ledmatrix
 
     libusb_close(device);
   }
+
+  void ledmatrix::apply_config(QSettings* settings, lib::preset::PresetManager* presets)
+  {
+    if (this->preset != nullptr)
+    {
+      this->preset->exit(this);
+      // delete this->preset;
+      this->preset = nullptr;
+    }
+
+    int brightness = settings->value(QString("%1_brightness").arg(id), 150).toInt();
+    this->brightness((uint8_t) brightness);
+
+    std::string preset_id = settings->value(QString("%1_preset").arg(id), "none").toString().toStdString();
+    auto preset = presets->get(preset_id);
+    if (preset == nullptr)
+    {
+      spdlog::error("Preset {} not found", preset_id);
+      return;
+    }
+
+    // this->preset = preset->clone().get();
+    this->preset = preset.get();
+
+    this->preset->init(this);
+  };
 
   void ledmatrix::send_command(command command, const std::vector<uint8_t>& parameters)
   {

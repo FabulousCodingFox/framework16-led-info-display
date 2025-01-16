@@ -27,7 +27,7 @@ auto main(int argc, char* argv[]) -> int
 
   spdlog::info("Registering presets");
   auto presets = new lib::preset::PresetManager();
-  presets->addPreset(std::make_shared<preset::clock>());
+  presets->add(std::make_shared<preset::clock>());
 
   return lib::window::run(argc, argv, handles, presets);
 }

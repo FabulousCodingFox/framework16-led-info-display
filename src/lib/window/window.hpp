@@ -2,6 +2,7 @@
 
 #include "../ledmatrix/ledmatrix.hpp"
 #include "../preset.hpp"
+#include <QComboBox>
 #include <QLabel>
 #include <QMainWindow>
 #include <QSettings>
@@ -20,7 +21,7 @@ namespace lib::window
     Q_OBJECT
 
   public:
-    explicit SettingsTab(QWidget* parent, int id, ledmatrix::ledmatrix* display, lib::preset::PresetManager* presets);
+    explicit SettingsTab(QWidget* parent, ledmatrix::ledmatrix* display, lib::preset::PresetManager* presets, QSettings* settings);
 
   private slots:
     void saveSettings();
@@ -28,8 +29,13 @@ namespace lib::window
   private:
     QSlider* fpsSlider;
     QLabel* fpsValueLabel;
+    QSlider* brightnessSlider;
+    QLabel* brightnessValueLabel;
+    QComboBox* presetComboBox;
     QSettings* settings;
     int id;
+    ledmatrix::ledmatrix* display;
+    lib::preset::PresetManager* presets;
   };
 
   class ConfigWindow : public QMainWindow
@@ -37,7 +43,7 @@ namespace lib::window
     Q_OBJECT
 
   public:
-    ConfigWindow(std::vector<ledmatrix::ledmatrix*>* displays, lib::preset::PresetManager* presets);
+    ConfigWindow(std::vector<ledmatrix::ledmatrix*>* displays, lib::preset::PresetManager* presets, QSettings* settings);
     ~ConfigWindow() override = default;
   };
 
@@ -46,7 +52,7 @@ namespace lib::window
     Q_OBJECT
 
   public:
-    TrayApp(std::vector<ledmatrix::ledmatrix*>* displays, lib::preset::PresetManager* presets);
+    TrayApp(std::vector<ledmatrix::ledmatrix*>* displays, lib::preset::PresetManager* presets, QSettings* settings);
     ~TrayApp() override;
 
   private slots:
@@ -58,6 +64,7 @@ namespace lib::window
     ConfigWindow* window = nullptr;
     std::vector<ledmatrix::ledmatrix*>* displays;
     lib::preset::PresetManager* presets;
+    QSettings* settings;
   };
 
   // NOLINTNEXTLINE
